@@ -44,15 +44,15 @@ jobs:
       artifacts_dir: infra/modules/aws/lambda/bin
     secrets: inherit
         
-  Build-deploy-ecr-images:
-    name: 'Build/Deploy ECR images'
-    needs: Deploy-infra
-    uses: fomiller/gh-actions/.github/workflows/ecr.yaml@main
-    with:
-      environment: ${{ contains(fromJSON('["refs/heads/main", "refs/heads/master"]'), github.ref) && 'prod' || 'dev' }}
-      repo: api
-      repo-prefix: "fomiller-{name}"
-    secrets: inherit
+  # Build-deploy-ecr-images:
+  #   name: 'Build/Deploy ECR images'
+  #   needs: Deploy-infra
+  #   uses: fomiller/gh-actions/.github/workflows/ecr.yaml@main
+  #   with:
+  #     environment: ${{ contains(fromJSON('["refs/heads/main", "refs/heads/master"]'), github.ref) && 'prod' || 'dev' }}
+  #     repo: api
+  #     repo-prefix: "fomiller-{name}"
+  #   secrets: inherit
      
     # use if you need to debug workflow
     # - name: DEBUG
