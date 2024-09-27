@@ -94,7 +94,7 @@ fmt:
     echo 'locals {}' >> {{infraDir}}/{{dir}}/main.tf
     echo 'environment = "dev"' > {{infraDir}}/{{dir}}/env-config/us-east-1/dev.tfvars
     echo 'environment = "prod"' > {{infraDir}}/{{dir}}/env-config/us-east-1/prod.tfvars
-    echo -e 'include "root" {\n\
+    echo 'include "root" {\n\
     \tpath = find_in_parent_folders()\n\
     }' > {{infraDir}}/{{dir}}/terragrunt.hcl
     @# {{infraDir}}/{{dir}} created.
