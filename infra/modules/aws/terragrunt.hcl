@@ -1,6 +1,8 @@
 locals {
+    terraform_version = ">=1.5.0"
+    aws_provider_version = ">=5.0.0"
     namespace = "fomiller"
-    project_name = "{name}"
+    project_name = < PROJECT_NAME >
 }
 
 generate provider {
@@ -24,11 +26,11 @@ generate versions {
   if_exists = "overwrite_terragrunt"
   contents  = <<EOF
 terraform {
-  required_version = ">=1.3.0"
+  required_version = "${local.terraform_version}"
   required_providers {
       aws = {
           source = "hashicorp/aws"
-          version = ">=5.0.0"
+          version = "${local.aws_provider_version}"
       }
   }
 }

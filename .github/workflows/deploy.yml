@@ -6,8 +6,8 @@ on:
   push:
     paths:
       - '.github/**'
-      - 'modules/**'
       - 'infra/**'
+      - 'src/**'
       - 'justfile'
    
 jobs:
@@ -22,38 +22,34 @@ jobs:
         with:
           cancel_others: 'true'
           concurrent_skipping: 'same_content_newer'
+
+  Build-Rust-Lambdas:
+    name: 'Build Rust Lambdas'
+    needs: Pre-check
+    uses: fomiller/gh-actions/.github/workflows/rust-lambda.yaml@main
+    with:
+      lambda_dir: src/
+      lambda_output:  infra/modules/aws/lambda/bin/
+      artifacts_dir: infra/modules/aws/lambda/bin
+      # conditionally build lambdas if these files change
+      src-filters: |
+        lambda:
+          - 'src/**'
+          - 'infra/**'
             
-  # Build-lambdas:
-  #   name: 'Build Go lambda'
-  #   needs: Pre-check
-  #   uses: fomiller/gh-actions/.github/workflows/go-lambda.yaml@main
-  #   with:
-  #     lambda_src: src/cmd/lambda/{name}/main.go
-  #     lambda_output:  infra/modules/aws/lambda/bin/lambda_{name}
-  #     artifacts_dir: infra/modules/aws/lambda/bin
-        
   Deploy-infra:
     name: 'Deploy Infra'
-    needs: [Pre-check]
+    needs: [Pre-check, Build-Rust-Lambdas]
     uses: fomiller/gh-actions/.github/workflows/terragrunt.yaml@main
     with:
       environment: ${{ contains(fromJSON('["refs/heads/main", "refs/heads/master"]'), github.ref) && 'prod' || 'dev' }}
       infra-dir: infra/modules/aws
-      doppler-project: {name}
+      doppler-project: < DOPPLER-PROJECT >
       download-artifacts: true
       artifacts_dir: infra/modules/aws/lambda/bin
     secrets: inherit
-        
-  # Build-deploy-ecr-images:
-  #   name: 'Build/Deploy ECR images'
-  #   needs: Deploy-infra
-  #   uses: fomiller/gh-actions/.github/workflows/ecr.yaml@main
-  #   with:
-  #     environment: ${{ contains(fromJSON('["refs/heads/main", "refs/heads/master"]'), github.ref) && 'prod' || 'dev' }}
-  #     repo: api
-  #     repo-prefix: "fomiller-{name}"
-  #   secrets: inherit
      
+    
     # use if you need to debug workflow
     # - name: DEBUG
     #   uses: lhotari/action-upterm@v1
