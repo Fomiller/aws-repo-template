@@ -15,6 +15,7 @@ provider "aws" {
     tags = {
       email = "forrestmillerj@gmail.com"
       managedWith = "terraform"
+      projectName = ${local.project_name}
     }
   }
 }
